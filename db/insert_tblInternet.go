@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"math/rand"
 	"time"
@@ -10,9 +9,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const file string = "./../ClientData2.mkl"
+const file string = "C:/Users/Mozdz/Desktop/Projetos/go-database-dummy-generator/db/ClientData2.mkl"
 
 func DummyTblInternet() {
+
 	db, err := sql.Open("sqlite3", file)
 	if err != nil {
 		log.Fatal(err)
@@ -70,50 +70,55 @@ func DummyTblInternet() {
 		"https://europa.hinova.com.br/sga/sgav4_exclusive/veiculo/consultarVeiculo.php?key=MjAyMDk1NTU4MTUy",
 		"web.whatsapp.com",
 	}
-	for i := 0; i < 2; i++ {
-		idRandom := getRandomID()
-		computerIdRandom := getRandomComputerID
-		userIdRandom := getRandomUserID
-		unixTime := time.Now().Format("20060102150405")
 
-		appsRandom := rand.Int() % len(apps)
-		fmt.Print("\n", apps[appsRandom])
+	for i := 0; i < 2000; i++ {
+		computerIdRandom := getRandomComputerID()
+		userIdRandom := getRandomUserID()
 
-		windowTextRandom := rand.Int() % len(window_text)
-		fmt.Print("\n", window_text[windowTextRandom])
+		unixTime := time.Now().Unix()
 
-		computerRandom := rand.Int() % len(computer)
-		fmt.Print("\n", computer[computerRandom])
+		appsRandom := getRandomString(apps)
 
-		userRandom := rand.Int() % len(user)
-		fmt.Print("\n", user[userRandom])
+		windowTextRandom := getRandomString(window_text)
 
-		hostRandom := rand.Int() % len(host)
-		fmt.Print("\n", host[hostRandom])
+		computerRandom := getRandomString(computer)
 
-		urlRandom := rand.Int() % len(url)
-		fmt.Print("\n", url[urlRandom])
+		userRandom := getRandomString(user)
+
+		hostRandom := getRandomString(host)
+
+		urlRandom := getRandomString(url)
 
 		result, err := db.Exec(`
 		INSERT INTO table_internet
-			(id,
+			(
 			timestamp,
 			computer,
 			computer_id,
-			users,
+			user,
 			user_id,
-			alloweds,
+			allowed,
 			is_idle,
 			duration,
 			app,
 			window_text,
 			url,
 			host)
-		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?) `,
-			idRandom, unixTime, computerRandom, computerIdRandom, userRandom, userIdRandom, appsRandom, windowTextRandom, urlRandom, hostRandom)
+		VALUES (?,?,?,?,?,?,?,?,?,?,?,?) `,
+			unixTime,
+			computerRandom,
+			computerIdRandom,
+			userRandom,
+			userIdRandom,
+			1, 0,
+			2000,
+			appsRandom,
+			windowTextRandom,
+			urlRandom,
+			hostRandom)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("ERRO: ", err)
 		}
 
 		lastInsertID, err := result.LastInsertId()
@@ -125,10 +130,6 @@ func DummyTblInternet() {
 	}
 }
 
-func getRandomID() int {
-	random := rand.Intn(9999999-0) + 0
-	return random
-}
 func getRandomComputerID() int {
 	random := rand.Intn(9999999-0) + 0
 	return random
@@ -137,4 +138,10 @@ func getRandomComputerID() int {
 func getRandomUserID() int {
 	random := rand.Intn(9999999-0) + 0
 	return random
+}
+
+func getRandomString(strings []string) string {
+	rand.Seed(time.Now().UnixNano())
+	randomIndex := rand.Intn(len(strings))
+	return strings[randomIndex]
 }
