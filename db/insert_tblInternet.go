@@ -118,7 +118,7 @@ func DummyTblInternet() {
 			hostRandom)
 
 		if err != nil {
-			log.Fatal("ERRO: ", err)
+			log.Fatal(err)
 		}
 
 		lastInsertID, err := result.LastInsertId()
@@ -126,7 +126,7 @@ func DummyTblInternet() {
 			log.Fatal(err)
 		}
 
-		log.Printf("ID da última linha inserida: %d", lastInsertID)
+		log.Printf("ID of the last line inserted: %d", lastInsertID)
 	}
 }
 
